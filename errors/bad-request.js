@@ -1,8 +1,8 @@
 const {StatusCodes}=require("http-status-codes");
-const customErrors=require("./custom-errors.js");
+const CustomErrors=require("./custom-errors.js");
 
 
-class BadRequest extends customErrors {
+class BadRequest extends CustomErrors {
     constructor (message) {
         super(message)
         this.statusCodes=StatusCodes.BAD_REQUEST

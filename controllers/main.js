@@ -1,4 +1,17 @@
+
+const BadRequest=require("../errors/bad-request.js");
+
+
 const login = async (req, res) => {
+    const {username, password}=req.body;
+    console.log(username, password);
+    //mongo
+    //joi
+    //errors in the controllers
+    if(!username || !password) {
+        throw new BadRequest("please provide username or password", 400);
+    }
+
     res.send("fake login register/signup")
 }
 
