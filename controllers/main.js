@@ -12,7 +12,7 @@ const login = async (req, res) => {
     //joi
     //errors in the controllers
     if(!username || !password) {
-        throw new BadRequest("please provide username or password", 400);
+        throw new BadRequest("please provide username or password", 401);
     }
     //demo, normally provided by DB
     const id=new Date().getDate();
@@ -22,27 +22,32 @@ const login = async (req, res) => {
     res.status(200).json({msg: "user created", token})
 }
 
+
+
+
 async function dashboard (req, res) {
-const authHeader=req.headers.authorization;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        throw new BadRequest("no token provided", 401);
+    }
 
-if(!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw BadRequest("no token provided", 401)
+    // Changed the split character from comma to space
+    const token = authHeader.split(" ")[1];
+    console.log(token);
+
+    const luckyNumber = Math.floor(Math.random() * 100);
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded);
+        res.status(200).json({
+            msg: `Hello, ${decoded.username}`,
+            secret: `your lucky number is ${luckyNumber}`
+        });
+    } catch (error) {
+        throw new BadRequest("you are not authorized at this route", 401);
+    }
 }
-
-const token=authHeader.split(" ")[1];
-console.log(token);
-const luckyNumber = Math.floor(Math.random() * 100);
-try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
-    return res.status(200).json({msg: `hello, ${decoded.username}`, secret: `your luckyNumber is ${luckyNumber}`})
-} catch (error) {
-   throw new CustomErrors("not authorized to use this route", 401) 
-}
-
-}
-
-
 
 module.exports={login, dashboard};
 
@@ -72,12 +77,3 @@ module.exports={login, dashboard};
 //     throw new CustomErrors("the route you access does not exist", 401)
 // }
 // }
-
-
-
-
-
-
-
-
-

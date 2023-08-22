@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const CustomErrors=require("../errors/custom-errors.js");
-const UnauthenticatedError=require("../errors/unauthenticated.js");
+const {UnauthenticatedError}=require("../errors/unauthenticated.js");
 
 
 async function authenticationMiddleware (req, res, next) {
@@ -18,10 +18,9 @@ async function authenticationMiddleware (req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { id, username } = decoded;
     req.user = { id, username };
-
     next();
   } catch (error) {
-    throw new CustomErrors("you are not authorized to use this route", 401);
+    throw new UnauthenticatedError("you are not authorized to use this route");
   }
 }
 
